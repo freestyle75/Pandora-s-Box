@@ -1,0 +1,79 @@
+<!-- templates/crosshair_app.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crosshair App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .container {
+      text-align: center;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #000;
+      background-color: #f9f9f9;
+    }
+    .copy-button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .update-form {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #000;
+      background-color: #f9f9f9;
+    }
+  </style>
+  <script>
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(function() {
+        alert('Crosshair code copied to clipboard');
+      }, function(err) {
+        console.error('Could not copy text: ', err);
+      });
+    }
+  </script>
+</head>
+<body>
+  <h1>Crosshair App</h1>
+  <div class="container">
+    <form method="POST" action="/crosshair-result">
+      <input type="text" name="nickname" placeholder="Enter player's nickname" required>
+      <button type="submit">Get Crosshair</button>
+    </form>
+    {% if crosshair_code %}
+    <div class="result">
+      <p>{{ crosshair_code }}</p>
+      <button class="copy-button" onclick="copyToClipboard('{{ crosshair_code }}')">Copy</button>
+    </div>
+    {% elif error %}
+    <div class="result">
+      <p>{{ error }}</p>
+    </div>
+    {% endif %}
+    <form method="POST" action="/update-crosshair" class="update-form">
+      <h2>Update/Add Crosshair</h2>
+      <input type="text" name="nickname" placeholder="Enter player's nickname" required>
+      <input type="text" name="crosshair_code" placeholder="Enter crosshair code" required>
+      <button type="submit">Update/Add Crosshair</button>
+    </form>
+  </div>
+</body>
+</html>
