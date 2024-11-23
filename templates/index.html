@@ -1,0 +1,53 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pandora's Box</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      margin-bottom: 40px;
+    }
+    .icon-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .icon {
+      text-align: center;
+      cursor: pointer;
+    }
+    .icon img {
+      width: 150px;
+      height: 150px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pandora's Box</h1>
+  <div class="icon-container">
+    <div class="icon" onclick="location.href='/password-generator'">
+      <img src="{{ url_for('static', filename='icons/password_generator_icon.png') }}" alt="Password Generator">
+      <p>Password Generator</p>
+    </div>
+    <div class="icon" onclick="location.href='/snake-game'">
+      <img src="{{ url_for('static', filename='icons/snake_game_icon.png') }}" alt="Snake Game">
+      <p>Snake Game</p>
+    </div>
+    <div class="icon" onclick="location.href='/crosshair-app'">
+      <img src="{{ url_for('static', filename='icons/crosshair_icon.png') }}" alt="Crosshair App">
+      <p>Crosshair App</p>
+    </div>
+  </div>
+</body>
+</html>
