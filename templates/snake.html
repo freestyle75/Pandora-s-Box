@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Game</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/snake.css') }}">
+  <style>
+    #game-over {
+      display: none;
+      text-align: center;
+    }
+    #continue-btn {
+      margin-top: 10px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="snake-container">
+    <div id="game-area">
+      <form id="nickname-form">
+        <label for="nickname">Enter your nickname:</label>
+        <input type="text" id="nickname" name="nickname" required>
+        <button type="submit">Start Game</button>
+      </form>
+      <canvas id="canvas" width="400" height="400"></canvas>
+      <div id="game-over">
+        <h2>Game Over</h2>
+        <p id="final-score"></p>
+        <button id="continue-btn">Continue</button>
+      </div>
+    </div>
+    <div id="high-score-table">
+      <h2>High Scores</h2>
+      <ol id="high-scores-list">
+        <!-- High scores will be dynamically populated here -->
+      </ol>
+    </div>
+  </div>
+  <script>
+    let nickname = '';
+    let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+
+    document.getElementById('nickname-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      nickname = document.getElementById('nickname').value;
+      document.getElementById('nickname-form').style.display = 'none';
+      startGame();
+    });
+
+    document.getElementById('continue-btn').addEventListener('click', function() {
+      document.getElementById('game-over').style.display = 'none';
+      startGame();
+    });
+
+    function displayHighScores() {
+      const highScoresList = document.getElementById('high-scores-list');
+      highScoresList.innerHTML = '';
+      highScores.forEach(score => {
+        const li = document.createElement('li');
+        li.textContent = `${score.nickname}: ${score.score}`;
+        highScoresList.appendChild(li);
+      });
+    }
+
+    function startGame() {
+      const canvas = document.getElementById('canvas');
+      const context = canvas.getContext('2d');
+      document.getElementById('canvas').style.display = 'block';
+
+      const grid = 16;
+      let count = 0;
+
+      const snake = {
+        x: 160,
+        y: 160,
+        dx: grid,
+        dy: 0,
+        cells: [],
+        maxCells: 4
+      };
+
+      const apple = {
+        x: 320,
+        y: 320
+      };
+
+      function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+      }
+
+      function loop() {
+        requestAnimationFrame(loop);
+
+        if (++count < 4) {
+          return;
+        }
+
+        count = 0;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        snake.x += snake.dx;
+        snake.y += snake.dy;
+
+        if (snake.x < 0) {
+          snake.x = canvas.width - grid;
+        } else if (snake.x >= canvas.width) {
+          snake.x = 0;
+        }
+
+        if (snake.y < 0) {
+          snake.y = canvas.height - grid;
+        } else if (snake.y >= canvas.height) {
+          snake.y = 0;
+        }
+
+        snake.cells.unshift({ x: snake.x, y: snake.y });
+
+        if (snake.cells.length > snake.maxCells) {
+          snake.cells.pop();
+        }
+
+        context.fillStyle = 'red';
+        context.fillRect(apple.x, apple.y, grid - 1, grid - 1);
+
+        context.fillStyle = 'black'; // Change snake color to black
+        snake.cells.forEach(function(cell, index) {
+          context.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+
+          if (cell.x === apple.x && cell.y === apple.y) {
+            snake.maxCells++;
+            apple.x = getRandomInt(0, 25) * grid;
+            apple.y = getRandomInt(0, 25) * grid;
+          }
+
+          for (let i = index + 1; i < snake.cells.length; i++) {
+            if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+              document.getElementById('final-score').textContent = `Final Score: ${snake.maxCells} Apples`;
+              document.getElementById('game-over').style.display = 'block';
+              document.getElementById('canvas').style.display = 'none';
+              saveHighScore(snake.maxCells);
+              return;
+            }
+          }
+        });
+      }
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'a' && snake.dx === 0) {
+          snake.dx = -grid;
+          snake.dy = 0;
+        } else if (e.key === 'w' && snake.dy === 0) {
+          snake.dy = -grid;
+          snake.dx = 0;
+        } else if (e.key === 'd' && snake.dx === 0) {
+          snake.dx = grid;
+          snake.dy = 0;
+        } else if (e.key === 's' && snake.dy === 0) {
+          snake.dy = grid;
+          snake.dx = 0;
+        }
+      });
+
+      requestAnimationFrame(loop);
+    }
+
+    function saveHighScore(score) {
+      highScores.push({ nickname, score });
+      highScores.sort((a, b) => b.score - a.score);
+      highScores = highScores.slice(0, 5);
+      localStorage.setItem('highScores', JSON.stringify(highScores));
+      displayHighScores();
+    }
+
+    displayHighScores();
+  </script>
+</body>
+</html>
