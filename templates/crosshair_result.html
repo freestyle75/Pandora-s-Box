@@ -1,0 +1,58 @@
+<!-- templates/crosshair_result.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crosshair Result</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    .container {
+      text-align: center;
+    }
+    .crosshair-code {
+      margin: 20px 0;
+      padding: 10px;
+      background-color: #ddd;
+      display: inline-block;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+  <script>
+    function copyToClipboard() {
+      const text = document.querySelector('.crosshair-code').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Crosshair code copied to clipboard!');
+      });
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Crosshair Code for {{ nickname }}</h1>
+    {% if crosshair_code %}
+      <div class="crosshair-code">{{ crosshair_code }}</div>
+      <button onclick="copyToClipboard()">Copy Code</button>
+    {% else %}
+      <p>No such player in the database.</p>
+    {% endif %}
+    <br>
+    <button onclick="location.href='/crosshair-app'">Go Back</button>
+  </div>
+</body>
+</html>
